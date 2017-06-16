@@ -132,7 +132,7 @@ class MaterialManager:
         prop_reg = AllProperties[propname]
         mat = self[matname]
         if prop_reg: # Can be None for nonparametrizable properties.
-            mat[propname]=prop_reg 
+            mat[propname]=prop_reg
         else:
             reporter.report("Nonparametrizable property is not loadable.")
 
@@ -202,15 +202,22 @@ class MaterialManager:
     # to be more thorough.
     def add_secret(self, name,
                    materialtype=material.MATERIALTYPE_BULK):
+        
         try:
+            
             collision=self.secretmaterials[name]
+            
         except KeyError:
+            
             self.secretmaterials[name] = MaterialProps(name, materialtype)
+            
             return self.secretmaterials[name]
         else:
+            
             raise KeyError("Collision in MaterialManager, key %s." % name)
 
     def delete_secret(self, name):
+        
         del self.secretmaterials[name]
 
 

@@ -520,6 +520,7 @@ class SubProblemContext(whoville.Who):
         # things that can't possibly be time-dependent.  Called by
         # Mesh.solver_precompute(), which is called by the Solve
         # menuitem callback before calling evolve().
+        
         debug.subthreadTest()
         if self._precomputing:
             return
@@ -527,6 +528,7 @@ class SubProblemContext(whoville.Who):
             subprob = self.getObject()
             subprob.precomputeLock.acquire()
             self._precomputing = True
+            
             try:
                 if subprob.precomputeRequired:
                     # Check that materials are well defined, etc.
@@ -538,11 +540,15 @@ class SubProblemContext(whoville.Who):
                     # an exception.
                     unsolvable = self.checkSolvability()
                     if unsolvable:
+                        
                         if solving:
+                            
+                            #This is the exact spot where the solving
+                            #process stops due to exception
                             raise ooferror2.ErrUserError(unsolvable)
                         else:
                             return
-
+                    
                     self.precomputeMaterials(lock=False)
 
                     # Find mapping for symmetrization.
@@ -636,7 +642,8 @@ class SubProblemContext(whoville.Who):
             badeqns = self.getObject().check_equations()
             neqns = self.getObject().nEquations()
             ndofs = self.getObject().nDoFs()
-
+            
+            
             if badmatls or badeqns or neqns!=ndofs: # or badstepper:
                 status.append("Subproblem '%s' is ill-posed!" % self.name())
                 if ndofs == 0:

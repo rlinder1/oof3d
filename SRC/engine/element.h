@@ -403,6 +403,7 @@ public:
   friend std::ostream &operator<<(std::ostream&, const Element&);
 
   Node* getCornerNode(int i) const;
+  FuncNode* getCornerFuncNode(int i) const;
   void setMaterial(const Material* pMat){matl=pMat;}
 
   //These definitions won't be (shouldn't be) used.

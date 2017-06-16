@@ -1885,6 +1885,7 @@ class Skeleton(SkeletonBase):
     #Break-up elements along interface boundaries as the mesh elements
     #get created.
     def femesh(self, edict, set_materials, skelpath, split_interface=True):
+        print "inside femesh function in skeleton.py"
         skelctxt = skeletoncontext.skeletonContexts[skelpath]
 
         # edict[n] is the n-sided master element.  Find the

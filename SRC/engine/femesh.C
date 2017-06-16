@@ -438,9 +438,11 @@ void FEMesh::removeMaterial(const Material *matl) {
 
 MaterialSet *FEMesh::getAllMaterials() const {
   MaterialSet *matls = new MaterialSet;
+  int dummyCount = 0; //Delete later
   for(MaterialCountMap::const_iterator i=materialCounts.begin();
       i!=materialCounts.end(); ++i) {
     matls->insert((*i).first);
+    dummyCount++;
   }
   return matls;
 }

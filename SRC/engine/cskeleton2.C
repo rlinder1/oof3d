@@ -68,13 +68,17 @@ CSkeletonBase::~CSkeletonBase() {
 
 const TimeStamp &CSkeletonBase::getTimeStamp() const {
   const TimeStamp &mts = getMicrostructure()->getTimeStamp();
-  if(mts > timestamp)
+  if(mts > timestamp){
+    std::cout << "CSkeletonBase::getTimeStamp is returning mts " << mts << std::endl;
     return mts;
+  }
+  std::cout << "CSkeletonBase::getTimeStamp is returning " << timestamp << std::endl;
   return timestamp;
 }
 
 void CSkeletonBase::incrementTimestamp() {
   ++timestamp;
+  std::cout << "CSkelBase::incTimestamp has changed timestamp to " << timestamp << std::endl;
 }
 
 //=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//
@@ -579,22 +583,36 @@ void CSkeleton::addGridFacesToBoundaries(const ICoord &idx, const ICoord &nml,
 void CSkeleton::checkIllegality() {
   for(unsigned int i=0; i<nelements(); ++i) {
     if(elements[i]->illegal()) {
+      std::cout << "CSkel::check found an illegal element!" << std::endl;
       illegal_ = true;
+      //setIllegal();
       return;
     }
   }
+  std::cout << "CSkel::check found no illegal elements!" << std::endl;
   illegal_ = false;
+  //setLegal();
+  return;
 }
 
 int CSkeleton::getIllegalCount() {
+  std::cout << "Begin CSkeleton::getIllegalCount" << std::endl;
+  std::cout << "Ill_ct time and timestamp are " << illegal_count_computation_time << timestamp << std::endl;
   if(illegal_count_computation_time < timestamp) {
+    std::cout << "CSkeleton::getIllegalCount, inside if block" << std::endl;
     illegalCount = 0;
     for(unsigned int i=0; i<nelements(); ++i) {
-      if(elements[i]->illegal())
+      if(elements[i]->illegal()){
+	std::cout << "CSkeleton::getIllegalCount found an illegal element!" << std::endl;
 	  ++illegalCount;
+      }
     }
-    ++illegal_count_computation_time;	  
+    ++illegal_count_computation_time;
+    std::cout << "ill_ct time has been incremented to " << illegal_count_computation_time << std::endl;
   }
+  //if (illegalCount > 0) {illegal_ = true;}
+  std::cout << "CSkeleton::getIllegalCount is returning " << illegalCount << std::endl;
+  std::cout << "End of CSkeleton::getIllegalCount function" << std::endl; 
   return illegalCount;
 }
 
@@ -858,12 +876,18 @@ bool CSkeletonBase::checkExteriorFaces(const CSkeletonFaceVector *faces)
 
 double CSkeletonBase::getHomogeneityIndex() const {
   if(homogeneity_index_computation_time < getTimeStamp()) {
-    calculateHomogeneityIndex();
+    try {calculateHomogeneityIndex();}
+    catch (...) {
+      std::cout << "Throwing HomogNotCalc error from cskel2.C, calcHomog" << std::endl;
+      throw ErrHomogeneityNotCalculable();
+    }
+    //catch (ErrHomogeneityNotCalculable &exc) {return 0;}
   }
   return homogeneityIndex;
 }
 
 void CSkeletonBase::calculateHomogeneityIndex() const {
+  std::cout << "Begin to calculate homogeneity, cskel2.C, setting hom index and il count to 0" << std::endl;
   homogeneityIndex = 0.0;
   illegalCount = 0;
   DefiniteProgress *progress = 
@@ -882,8 +906,10 @@ void CSkeletonBase::calculateHomogeneityIndex() const {
 	  if((*elit)->suspect()) 
 	    ++suspectCount;
 	}
-	else
+	else {
+	  std::cout << "Found an illegal element in CSkelBase::calcHomIndex()" << std::endl;
 	  ++illegalCount;
+	}
 	progress->setFraction(float((*elit)->getIndex())/nelements());
 	progress->setMessage(to_string((*elit)->getIndex()) + "/" +
 			     to_string(nelements()));
@@ -901,11 +927,18 @@ void CSkeletonBase::calculateHomogeneityIndex() const {
     ++homogeneity_index_computation_time;
     ++illegal_count_computation_time;
     ++suspect_count_computation_time;
+    std::cout << "printing new hom_index and il_count timestamps" << std::endl;
+    std::cout << homogeneity_index_computation_time << illegal_count_computation_time << std::endl;
   }
   catch (...) {
     progress->finish();
+    std::cout << "finish progress in cskel2.C, in catch block" << std::endl;
     throw;
+    
+    
+    
   }
+  std::cout << "finish progress in cskel2.C, not in catch block" << std::endl;
   progress->finish();
 }
 
@@ -2812,7 +2845,7 @@ CDeputySkeleton::CDeputySkeleton(CSkeletonBase *skel)
     skeleton(skel->sheriffSkeleton()),
     active(false)
 {
-  // oofcerr << "CDeputySkeleton::ctor: " << *this << " " << this << std::endl;
+  oofcerr << "CDeputySkeleton::ctor: " << *this << " " << this << std::endl;
   skeleton->addDeputy(this);
   illegal_ = skel->illegal();
   // When the DeputySkeleton is active, the positions of its nodes
@@ -2820,7 +2853,11 @@ CDeputySkeleton::CDeputySkeleton(CSkeletonBase *skel)
   // reference Skeleton's nodes are stored in the nodePositions
   // dictionary.  When it's inactive, it's the other way around.
   nodePositions = skel->getMovedNodes(); // returns a new NodePositionsMap*.
-  homogeneityIndex = skel->getHomogeneityIndex();
+  try {
+    homogeneityIndex = skel->getHomogeneityIndex();
+  } catch (ErrHomogeneityNotCalculable) {
+    std::cout << "Caught EHNC in CDepSkel constructor in cskel2.C" << std::endl;
+  }
   ++homogeneity_index_computation_time;
 }
 
@@ -3853,5 +3890,14 @@ void CSkeleton::printSelf(std::ostream &os) const {
 }
 
 void CDeputySkeleton::printSelf(std::ostream &os) const {
+  os << "Begin CDeputySkeleton printSelf function" << std::endl;
   os << "CDeputySkeleton(uid=" << uid << ")";
+  os << "Am I illegal? " << illegal_ << std::endl;
+  os << "My illegal count is " << illegalCount << std::endl;
+  os << "Am I active? " << active << std::endl;
+  os << "My homog index is " << homogeneityIndex << std::endl;
+  os << "My timestamp is " << timestamp << std::endl;
+  os << "My getTimestamp is " << getTimeStamp() << std::endl;
+  os << "My homog index computation time is " << homogeneity_index_computation_time << std::endl;
+  os << "My illegal count comp time is " << illegal_count_computation_time << std::endl;
 }

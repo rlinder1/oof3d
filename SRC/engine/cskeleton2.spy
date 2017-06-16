@@ -287,22 +287,26 @@ def orderedNodeIndexPair(a, b):
 
 # TODO OPT: Move big loops to C++.
 
-def _CSkeletonBase_femesh(self, edict, material=None):
+def _CSkeletonBase_femesh(self, edict, material):
     # edict is created in newMesh() in IO/meshmenu.py.  It's a
     # dictionary of MasterElements keyed by ElementShape names.
+    
     order = edict.values()[0].fun_order()
     realmesh = femesh.FEMesh(self.getMicrostructure(), order)
-
+    
     # this adds the nodes and elements
+    
     self.populate_femesh(realmesh, material)
-
+   
     # PointBoundaries
     pointboundaries = self.getPointBoundaries()
     prog_size = len(pointboundaries)
     prog_index = 0
+   
     for bdkey, pointbndy in pointboundaries.items():
         realbndy = realmesh.newPointBoundary(bdkey)
         nodes = pointbndy.getNodes()
+        
         for node in nodes:
             ## TODO 3.1: SPLIT NODES Skeleton and mesh node indices won't
             ## match when we have split nodes, and we'll also have to
@@ -320,15 +324,17 @@ def _CSkeletonBase_femesh(self, edict, material=None):
 #                 pbar.set_progress(1.0*(prog_index+1)/prog_size)
 #                 pbar.set_message("Allocating point boundaries: %d/%d"%(prog_index+1, prog_size))
         prog_index +=1
-
+    
     # EdgeBoundaries
     edgeboundaries = self.getEdgeBoundaries()
     prog_size = len(edgeboundaries)
     prog_index = 0
     edgeelements = {}
+    
     try:
         master1D = edict["Line"]
     except KeyError:
+        
         pass
     else:
         for bdkey, edgebndy in edgeboundaries.items():
@@ -395,7 +401,7 @@ def _CSkeletonBase_femesh(self, edict, material=None):
             prog_index +=1
         # end loop over edgeboundaries
     # end try/except/else for master1D
-
+    
     # Face Boundaries
     faceboundaries = self.getFaceBoundaries()
     prog_size = len(faceboundaries)
@@ -410,6 +416,7 @@ def _CSkeletonBase_femesh(self, edict, material=None):
         masters[4] = edict["Quadrilateral"]
     except:
         pass
+    
     for bdykey, facebndy in faceboundaries.items():
         realfacebndy = realmesh.newFaceBoundary(bdykey)
         faces = facebndy.getFaces() # OrientedCSkeletonFaceSet
@@ -426,6 +433,7 @@ def _CSkeletonBase_femesh(self, edict, material=None):
             lowest = min(nodeIndices)
             which = nodeIndices.index(lowest)
             key = tuple(nodeIndices[which:] + nodeIndices[:which]) # cyclic
+            
             try:
                 elem = faceelements[key]
                 reverse = False
@@ -438,11 +446,16 @@ def _CSkeletonBase_femesh(self, edict, material=None):
                 # cyclic permutation.
                 rkey = tuple(rkey[-1:] + rkey[:-1])
                 try:
+                    
                     elem = faceelements[rkey]
                     reverse = True
                 except KeyError:
+                    
                     # No element was found.  Create one.
+                    
+                    
                     master = masters[nnodes]
+                    
                     # This relies on index agreement between Skeletons
                     # and Meshes, which is guaranteed by
                     # CSkeleton::populate_femesh().
@@ -452,12 +465,15 @@ def _CSkeletonBase_femesh(self, edict, material=None):
                     ## is on the boundary.
                     realnodes = [realmesh.getNode(idx) for idx in nodeIndices]
                     elem = master.buildFaceBoundary(realnodes)
-                                
+                    
                     # Find the bulk elements that the face is part of.
                     skelels = self.getFaceElements(face.get_face())
+                    
                     meshels = [realmesh.getElement(el.getIndex())
                                for el in skelels]
+                    
                     assert len(meshels) <= 2
+                    
                     # Figure out which of the bulk elements is in the
                     # front and which is in the back.  "Front" means
                     # that the bulk element is on the side of the face
@@ -466,6 +482,7 @@ def _CSkeletonBase_femesh(self, edict, material=None):
                     mastercenter = elem.center()
                     facecenter = elem.from_master(mastercenter)
                     normal = element.findNormal(elem, mastercenter)
+                    
                     for bulkel in meshels:
                         bulkcenter = bulkel.from_master(bulkel.center())
                         if normal.dot(bulkcenter-facecenter) > 0:
@@ -483,6 +500,7 @@ def _CSkeletonBase_femesh(self, edict, material=None):
         
 
     realmesh.skeleton = self
+    
     return realmesh
 
 CSkeletonBasePtr.femesh = _CSkeletonBase_femesh

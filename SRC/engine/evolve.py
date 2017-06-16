@@ -28,7 +28,9 @@ maxconsistencysteps = 100 # Can be altered via commands in meshmenu.py.
 linsys_dict = {} # SubProblemContext => LinearizedSystem
 
 def evolve(meshctxt, endtime):
+    
     global linsys_dict
+    
     starttime = meshctxt.getObject().latestTime()
 
     # We're solving a static problem if endtime is the same as the
@@ -43,13 +45,17 @@ def evolve(meshctxt, endtime):
     # static problems.
     continuing = (not staticProblem and
                   isinstance(meshctxt.status, meshstatus.Solved))
-
+    
     targettime = endtime
 
     if starttime > endtime:
         raise ooferror2.ErrSetupError("End time must not precede current time.")
 
+
+    #The following line is the one where it breaks!
     meshctxt.solver_precompute(solving=True)
+
+
 
     meshctxt.setStatus(meshstatus.Solving())
     meshctxt.timeDiff = endtime - starttime # used to get next endtime in GUI
@@ -74,7 +80,7 @@ def evolve(meshctxt, endtime):
         # Initialize statistics.
         for subp in subprobctxts:
             subp.resetStats()
-
+        
         if not continuing:
             # Initialize static fields in all subproblems.  For static
             # problems, this computes the actual solution.
@@ -97,7 +103,7 @@ def evolve(meshctxt, endtime):
             meshctxt.setStatus(meshstatus.Solved())
             meshctxt.setCurrentTime(endtime, None)
             return
-
+        
         time = starttime
         if continuing:
             delta = meshctxt.solverDelta

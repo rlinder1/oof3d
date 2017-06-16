@@ -146,6 +146,7 @@ public:
   ElementData *getDataByName(char *name);
 
   Node* getCornerNode(int i) const;
+  FuncNode* getCornerFuncNode(int i) const;
   const string &name();
   %new StringVec* namelist();
 

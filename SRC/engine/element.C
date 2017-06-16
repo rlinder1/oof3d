@@ -1120,6 +1120,13 @@ Node* Element::getCornerNode(int i) const
   return (nit+i).node();
 }
 
+FuncNode* Element::getCornerFuncNode(int i) const
+{
+  ElementCornerNodeIterator nit = cornernode_iterator();
+  return (nit+i).funcnode();
+}
+
+
 //=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//
 
 FaceBoundaryElement::FaceBoundaryElement(const MasterElement &me,

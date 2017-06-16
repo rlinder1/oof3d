@@ -16,7 +16,7 @@ from ooflib.SWIG.engine import cskeletonmodifier
 
 
 def _FixIllegal_postProcess(self, context):
-
+    print "beginning of fixillegal post process in fixillegal.spy"
     if self.getNGuilty():
         reporter.warn("Could not remove all illegal elements!")
     ndone = self.getNDone()

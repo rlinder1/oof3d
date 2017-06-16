@@ -18,7 +18,7 @@ from ooflib.common import utils
 from ooflib.common.IO.GUI import gtklogger
 from ooflib.engine.IO import skeletoninfo
 from ooflib.engine.IO.GUI import genericinfoGUI
-
+from ooflib.SWIG.engine import ooferror2
 import gtk
 
 ## Nodes and Elements are identified by index, because they can be
@@ -207,7 +207,12 @@ class ElementModeGUI(SkeletonInfoModeGUI):
                     pixGrp = pixelgroup.pixelGroupNames(microstructure,
                                                         domCat)
                     #pixgrps = ", ".join(pixGrp)
-                    hom = "%f" % element.homogeneity(microstructure)
+                    try:
+                        hom = "%f" % element.homogeneity(microstructure)
+                    #TODO: Add in specific exception later    
+                    except:
+                        print "caught homogeneity exception in skeletoninfoGUI.py"
+                        hom = "???"
                     eshape = "%f" % element.energyShape()
                     mat = element.material(skeleton)
                     egrps = ','.join(element.groupNames())

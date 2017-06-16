@@ -18,6 +18,8 @@
 #include "engine/cskeletonselectable_i.h"
 #include "engine/cskeletonmodifier.h"
 
+#include<iostream> //experimenting with printing
+#include<typeinfo> //experimenting with typeid()
 /******************************************************
 
                      TARGETS
@@ -129,6 +131,21 @@ public:
 	 double d);
   virtual Coord getPosition(const CDeputySkeleton*, const CSkeletonNode*) const;
 };
+
+//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+/*
+class Relax : public FiddleNodes {
+private:
+  double delta;
+public:
+  Relax(FiddleNodesTargets *trgts, CSkelModCriterion *crtrn, double t,
+	double d);
+  virtual Coord getPosition(const CDeputySkeleton*, const CSkeletonNode*) const;
+};
+*/
+//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
+//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
 
 class Smooth : public FiddleNodes {
 public:

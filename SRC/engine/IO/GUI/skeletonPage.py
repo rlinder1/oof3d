@@ -28,6 +28,7 @@ from ooflib.common.IO.GUI import tooltips
 from ooflib.common.IO.GUI import whowidget
 from ooflib.engine import skeletoncontext
 from ooflib.SWIG.engine import cskeletonmodifier
+from ooflib.SWIG.engine import ooferror2
 import gtk
 import pango
 
@@ -338,6 +339,8 @@ class SkeletonPage(oofGUI.MainPage):
         if skelpath:
             skelctxt = skeletoncontext.skeletonContexts[skelpath]
             skel = skelctxt.getObject()
+            print "printing skeleton in update in skeletonPage.py"
+            print skel
             ## Updating the state info is done in two stages, because
             ## the homogeneity index can take a while to compute.  In
             ## the first stage, the quick stuff is computed, and the
@@ -351,6 +354,8 @@ class SkeletonPage(oofGUI.MainPage):
                 nFaces = skel.nfaces()
                 nSegments = skel.nsegments()
                 illegalcount = skel.getIllegalCount()
+                print "printing illegal count in update, skeletonPage.py"
+                print illegalcount
                 suspectcount = skel.getSuspectCount()
                 shapecounts = None #skel.countShapes()
                 x_periodicity = bool(skel.getPeriodicity(0)) # left right
@@ -370,6 +375,9 @@ class SkeletonPage(oofGUI.MainPage):
                 skelctxt.begin_writing()
             try:
                 homogIndex = skel.getHomogeneityIndex()
+            except ooferror2.ErrHomogeneityNotCalculable:
+                print "except statement in skeletonPage.py"
+                homogIndex = None 
             finally:
                 if not locked:
                     skelctxt.end_writing()

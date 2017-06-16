@@ -60,7 +60,9 @@ CSubProblemPtr.get_dependencies = _get_dependencies
 # For every defined flux, check that it is consistently defined.
 # Returns a list of badly defined materials.
 def _check_materials(self):
+    
     badmatls = set()
+    
     for f in self.all_fluxes():
         if self.is_active_flux(f):
             # check_flux returns a list of bad materials
@@ -92,6 +94,7 @@ def _check_equations(self):
         if self.is_active_equation(e):
             ## TODO PLASTICITY: This only applies to FluxEquations
             flx = e.flux()
+            
             for mat in self.getMaterials():
                 if mat and mat.contributes_to_flux(flx):
                     break

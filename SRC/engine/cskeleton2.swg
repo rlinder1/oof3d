@@ -127,6 +127,8 @@ public:
   void activate();
   bool illegal();
   void setIllegal();
+  //remove this later!!!!
+  void setLegal();
   void incrementTimestamp();
   const TimeStamp &getTimeStamp();
   // void updateGeometry();
@@ -297,7 +299,7 @@ public:
   CSkeleton *completeCopy();
   CSkeleton *sheriffSkeleton();
 
-  void populate_femesh(FEMesh *fem, Material *mat=NULL);
+  void populate_femesh(FEMesh *fem, Material *mat);
 
   %new string *sanityCheck();
 

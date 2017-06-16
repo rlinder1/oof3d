@@ -118,7 +118,7 @@ public:
   }
   bool contains(const Coord &pt, const CSkeletonBase *skel) const {
     return face0.contains(pt, skel) && face1.contains(pt, skel); 
-  }
+     }
   operator bool() const { return face0 != OUTERFACE_NONE; }
   friend std::ostream &operator<<(std::ostream&, const OuterEdgeID&);
 };
@@ -167,10 +167,17 @@ public:
   //   ++timestamp;
   // }
   bool illegal() const {
+    std::cout << "This is the cskeleton2.h function illegal(), returning " << illegal_ << std::endl;
     return illegal_;
   }
   void setIllegal() {
+    std::cout << "This is the cskeleton2.h function setIllegal()" << std::endl;
     illegal_=true; 
+  }
+  //Remove this function later!!!!
+  void setLegal() {
+    std::cout << "This is the cskeleton2.h dummy function SetLegal()" << std::endl;
+    illegal_ = false;
   }
   virtual void checkIllegality() = 0;
   void incrementTimestamp();
@@ -346,7 +353,7 @@ public:
 
   // real meshes
   //virtual FEMesh* femesh() = 0;
-  virtual void populate_femesh(FEMesh *fem, Material *mat=NULL) = 0;
+  virtual void populate_femesh(FEMesh *fem, Material *mat) = 0;
 
   virtual void cleanUp() = 0;
 
@@ -589,7 +596,7 @@ public:
 
   // real meshes
   //virtual FEMesh* femesh();
-  virtual void populate_femesh(FEMesh *fem, Material *mat=NULL);
+  virtual void populate_femesh(FEMesh *fem, Material *mat);
 
   virtual void printSelf(std::ostream&) const;
 
@@ -855,8 +862,8 @@ public:
 
   // real meshes
   //virtual FEMesh* femesh() {return skeleton->femesh();}
-  virtual void populate_femesh(FEMesh *fem, Material *mat=NULL) {
-    skeleton->populate_femesh(fem);
+  virtual void populate_femesh(FEMesh *fem, Material *mat) {
+    skeleton->populate_femesh(fem, mat);
   }
 
   virtual void cleanUp() {

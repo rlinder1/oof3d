@@ -238,10 +238,13 @@ Coord Anneal::getPosition(const CDeputySkeleton *skeleton,
   x[0] += delta*pxlsize[0]*gasdev();
   x[1] += delta*pxlsize[1]*gasdev();
   x[2] += delta*pxlsize[2]*gasdev();
+  
   return x;
 }
 
 //=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//=\\=//
+
+
 
 Smooth::Smooth(FiddleNodesTargets *trgts, CSkelModCriterion *crtrn, double t)
   : FiddleNodes(trgts, crtrn, t)

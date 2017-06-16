@@ -18,8 +18,10 @@
 #include <algorithm>
 
 CSkeletonBase* FixIllegal::apply(CSkeletonBase *skeleton) {
-
+  std::cout << "Beginning of FixIllegal::apply() " << std::endl;
+  //This line is the problem when the volume problems occur
   CDeputySkeleton *newSkeleton = skeleton->deputyCopy();
+  std::cout << "FixIllegal::apply() after making deputy copy" << std::endl;
   newSkeleton->activate();
 
   CSkeletonElementVector baddies;

@@ -252,7 +252,7 @@ cregisteredclass.Registration(
     MinimumVolume,
     ordering=1,
     params=[
-        parameter.FloatParameter(
+        parameter.NonNegativeFloatParameter(
             'threshold', 10,
             tip="Minimum acceptable element volume.") ,
         enum.EnumParameter('units', units.Units, value='Voxel',
@@ -269,7 +269,7 @@ cregisteredclass.Registration(
     MinimumArea,
     ordering=2,
     params=[
-        parameter.FloatParameter(
+        parameter.NonNegativeFloatParameter(
             'threshold', 10,
             tip="Minimum acceptable surface area.") ,
         enum.EnumParameter('units', units.Units, value='Voxel',
@@ -286,7 +286,7 @@ cregisteredclass.Registration(
     MinimumLength,
     ordering=3,
     params=[
-        parameter.FloatParameter(
+        parameter.NonNegativeFloatParameter(
             'threshold', 10,
             tip="Minimum acceptable segment length.") ,
         enum.EnumParameter('units', units.Units, value='Voxel',

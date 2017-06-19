@@ -127,8 +127,6 @@ public:
   void activate();
   bool illegal();
   void setIllegal();
-  //remove this later!!!!
-  void setLegal();
   void incrementTimestamp();
   const TimeStamp &getTimeStamp();
   // void updateGeometry();
@@ -179,6 +177,7 @@ public:
   int getIllegalCount();
   int getSuspectCount();
   void checkIllegality();
+  bool checkIllegalityBool();
 
   int nDeputies();
 

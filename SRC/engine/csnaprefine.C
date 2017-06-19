@@ -27,6 +27,8 @@ void SnapRefine::getElementSignatures(CSkeletonBase *skeleton,
 {
   ElementSignatureVector nondeadlockable;
   Coord size = newSkeleton->getMicrostructure()->sizeOfPixels();
+  //TODO: use C++11 syntax to make next line more elegant
+  //Should be min_delta2 = min_distance*std::max({size[0], size[1], size[2]});
   min_delta2 = min_distance*std::max(std::max(size[0],size[1]),size[2]);
   min_delta2 *= min_delta2;
 

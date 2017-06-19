@@ -140,7 +140,8 @@ class CSkeletonBase : public PythonExportable<CSkeletonBase> {
 protected:
   static uidtype uidbase;
   uidtype uid;
-  bool illegal_;
+  //bool illegal_;
+  mutable bool illegal_;
   mutable int illegalCount;
   mutable int suspectCount;
   mutable double homogeneityIndex;
@@ -167,19 +168,15 @@ public:
   //   ++timestamp;
   // }
   bool illegal() const {
-    std::cout << "This is the cskeleton2.h function illegal(), returning " << illegal_ << std::endl;
     return illegal_;
   }
   void setIllegal() {
-    std::cout << "This is the cskeleton2.h function setIllegal()" << std::endl;
     illegal_=true; 
   }
-  //Remove this function later!!!!
-  void setLegal() {
-    std::cout << "This is the cskeleton2.h dummy function SetLegal()" << std::endl;
-    illegal_ = false;
-  }
+  
   virtual void checkIllegality() = 0;
+  //remove later?
+  virtual bool checkIllegalityBool() = 0;
   void incrementTimestamp();
   const TimeStamp &getTimeStamp() const;
 
@@ -507,6 +504,7 @@ public:
     return periodicity[dim];
   }
   virtual void checkIllegality();
+  virtual bool checkIllegalityBool();
   virtual int getIllegalCount();
   //vtkPoints *getElementPoints(int eidx);
   virtual void getIllegalElements(CSkeletonElementVector &) const;
@@ -625,6 +623,17 @@ public:
   virtual const std::string &classname() const { return classname_; }
   virtual void destroy();
 
+  //setter and getter for NodePositionsMap
+  //If this works, this should be moved to a more appropriate location
+  NodePositionsMap* getNodePositionsMap() const {
+    return nodePositions;
+  }
+
+  void setNodePositionsMap(NodePositionsMap* otherMap) {
+    nodePositions = otherMap;
+  }
+
+  
   // basic get methods
   virtual const CMicrostructure *getMicrostructure() const {
     return skeleton->MS;
@@ -747,6 +756,9 @@ public:
   }
   virtual void checkIllegality() {
     skeleton->checkIllegality();
+  }
+  virtual bool checkIllegalityBool() {
+    return skeleton->checkIllegalityBool();
   }
   virtual int getIllegalCount() {
     return skeleton->getIllegalCount();

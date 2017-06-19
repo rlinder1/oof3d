@@ -236,9 +236,6 @@ class MoveNodeToolboxGUI(toolboxGUI.GfxToolbox, mousehandler.MouseHandler):
 
     def illegalityText(self):
         skel = self.getSkeleton()
-        print "inside illegalitytext in movenodeGUI.py"
-        print "printing skeleton object in here"
-        print skel
         if skel:
             n = self.getSkeleton().getIllegalCount()
             if n:

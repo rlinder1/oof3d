@@ -32,7 +32,7 @@ class Relax : public CSkeletonModifier {
   double getAlpha();
   double getGamma();
   double getIterations();
-  void updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh);
+  bool updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh);
   
 };
 

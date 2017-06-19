@@ -9,8 +9,6 @@
 #include "engine/cskeletonselectable_i.h"
 #include "engine/cskeletonmodifier.h"
 
-//Not sure whether to inherit from fiddlenodes, skeleton modifier, or both
-
 
 class Relax : public CSkeletonModifier {
 protected:
@@ -19,8 +17,9 @@ protected:
   int iterations; //set by user
 
   char* materialName; //set to "boneMarrow" in constructor
-  int count; //set to 0 in constructor
-  bool solverConverged; //set to "true" in constructor
+  int count; //not set in constructor
+  bool solverConverged; //not set in constructor
+  bool legalSkeleton; //not set in constructor
   char* meshName; //set to empty string in constructor
   double skelRelRate;
   //something about parameter name issues that I need to fix?
@@ -39,7 +38,7 @@ protected:
  
  
   CSkeletonBase* apply(CSkeletonBase* skeleton);
-  void updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh);
+  bool updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh);
   double getAlpha() {return alpha;}
   double getGamma() {return gamma;}
   int getIterations() {return iterations;}

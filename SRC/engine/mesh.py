@@ -1201,25 +1201,32 @@ class Mesh(whoville.Who):
         return meshdatacache.getMeshDataCacheType(self.datacache)
 
     def replaceDataCache(self, cache):
+        
         self.getObject().replaceDataCache(cache)
         self.datacache = cache
 
     def clearDataCache(self):
+        
         self.getObject().clearDataCache();
 
     def cacheCurrentData(self):
+        
         self.getObject().cacheCurrentData();
 
     def restoreCachedData(self, time):
+        
         self.getObject().restoreCachedData(time)
 
     def restoreLatestData(self):
+        
         self.getObject().restoreLatestData()
 
     def releaseCachedData(self):
+        
         self.getObject().releaseCachedData()
 
     def releaseLatestData(self):
+        
         self.releaseCachedData()
 
     def cachedTimes(self):

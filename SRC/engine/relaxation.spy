@@ -52,13 +52,10 @@ def _Relax_setProperties(self):
     relaxPropReg = skeletonrelaxationrate.SkeletonRelaxationRateTensor.\
             named_copy("__relaxationrate%d__" % threadno, secret=True) 
     self.materialName = 'boneMarrow'
-    print "dummy material for relaxation has been created, relaxation.spy"
     materialmanager.materialmanager.add_secret(self.materialName)
     self.stiffness = stiffnessPropReg()
-    
     materialmanager.materialmanager.add_prop(self.materialName,
                                              self.stiffness.name())
-    
     #does anything need to be switched around?
     relaxPropReg.getParameter("alpha").value = self.getAlpha()
     relaxPropReg.getParameter("gamma").value = self.getGamma()
@@ -77,19 +74,10 @@ def _Relax_material(self):
 RelaxPtr.material = _Relax_material
 
 
-
 #Checks that skeleton is legal, we have more iterations,
 #and that the solver has not failed to converge
 def _Relax_goodToGo(self, skeleton):
-    skeleton.checkIllegality()
-    print "inside goodtogo, r.spy, printing skeleton status:"
-    print skeleton;
-    #This is a temporary workaround
-    if (skeleton.getIllegalCount() > 0):
-        self.count = self.iterations
-        return False
-            
-    return (not skeleton.illegal()
+    return (self.legalSkeleton
             and self.count < self.iterations
             and self.solverConverged)
 RelaxPtr.goodToGo = _Relax_goodToGo
@@ -100,8 +88,6 @@ RelaxPtr.goodToGo = _Relax_goodToGo
 def _Relax_updateIteration(self, prog):
     self.count += 1
 RelaxPtr.updateIteration = _Relax_updateIteration
-
-
 
 
 #Creates a mesh with the default subproblem
@@ -215,21 +201,16 @@ RelaxPtr.set_boundary_conditions = _Relax_set_boundary_conditions
 
 
 def _Relax_update_node_positions(self, skeleton, mesh):
-    
     skeleton.incrementTimestamp()
     femesh = mesh.getObject()
-    
-    self.updateNodePositionsC(skeleton, femesh)
-    
+    if not self.updateNodePositionsC(skeleton, femesh):
+        self.legalSkeleton = False
+        reporter.report("Relaxation aborted during iteration", self.count,
+                        "in order to stop illegal elements from forming!")
 RelaxPtr.update_node_positions = _Relax_update_node_positions
 
-# def _Relax_apply(self, oldskeleton, context):
-#     prog = progress.getProgress("Relax", progress.DEFINITE)
-#     prog.setMessage("Preparing to relax...")
-#     return oldskeleton.deputyCopy()
-# RelaxPtr.apply = _Relax_apply
 
-    
+
 #Not clear if this function does anything...
 def _Relax_initialize_fields(self, mesh):
     print "initialized fields" #doesn't show up (yet?)
@@ -245,26 +226,24 @@ RelaxPtr.initialize_fields = _Relax_initialize_fields
 
 #Handles the overall relaxation process
 #(This function is kind of like main for relaxation.*)
-def _Relax_postProcess(self, context):
-    #could put something here to stop execution if user-given values are bad,
-    #if we can't figure out how to gray out OK in that case
+def _Relax_postProcess(self, context):    
     self.setProperties()
     prog = progress.getProgress("Relax", progress.DEFINITE)
     skeleton = context.getObject()
-    print "printing skeleton at beginning of post process"
-    print skeleton
+
+    if skeleton.checkIllegalityBool():
+        reporter.report("Illegal elements detected, could not perform relaxation")
+        return
     
     before = skeleton.energyTotal(self.getAlpha())
     
     self.count = 0
     self.iterations = self.getIterations()
     self.solverConverged = True
+    self.legalSkeleton = True
 
     try:
-        print "right before while loop in pp, printing skeleton"
-        print skeleton
         while self.goodToGo(skeleton) and not prog.stopped():
-            print "begin iteration ", self.count, "in relaxation.spy"
             mesh = self.create_mesh(context)
             self.define_fields(mesh)
             #self.initialize_fields(mesh)
@@ -277,120 +256,24 @@ def _Relax_postProcess(self, context):
                 print "progress stopped, relaxation.spy "
                 break
 
-
-            print "after core process, printing skeleton and context.getObject()"
-            print skeleton
-            print context.getObject()
-            
-            print "checking illegality after core process"
-            skeleton.checkIllegality()
-            context.getObject().checkIllegality()
-
-            print "printing again after checking legality"
-            print skeleton
-            print context.getObject()
-            try:
-                print "before updating positions, what is homogeneity?"
-                print skeleton.getHomogeneityIndex()
-            except:
-                print "getting homog index caused exception before updating nodes"
             context.begin_writing()
             try:
                 self.update_node_positions(skeleton, mesh)
             finally:
                 context.end_writing()
-
-
-            print "after updating positions, printing skeleton and context.getObject()"
-            print skeleton
-            
-            print context.getObject()
-            
-
-                
-            try:
-                print "after updating positions, what is homogeneity?"
-                print skeleton.getHomogeneityIndex()
-            except:
-                print "getting homog index caused exception after updating nodes"
-            print "skeleton status immediately after updating nodes"
-            print skeleton
         
             mesh.lockAndDelete()
-            print "immediately after locking and deleting mesh, r.spy pp"
-            #This is the line that calls skeletonPage.update
-            try:
-                print "begin try change notification, r.spy, pp"
-                switchboard.notify("Skeleton changed", context.path())
-                print "end try change notification, r.spy, pp"
-            except:
-                print "notification of change caused an exception, r.spy pp"
-            print "immediately after notifying switchboard of skel change, r.spy pp"
-            switchboard.notify("redraw")
-            print "immediately after notifying switchboard of redraw, r.spy pp"
             
+            switchboard.notify("Skeleton changed", context.path())
+            switchboard.notify("redraw")    
 
-            #temporary workaround
-            try:
-                print skeleton.getHomogeneityIndex(), "just printed homog index"
-            except ooferror2.ErrHomogeneityNotCalculable:
-                print "caught exception in relaxation.spy, near end of post process"
-                self.count = self.iterations
-
-            
-            print "printing skeleton info at end of while loop" 
-            print skeleton
-            print "skeleton.getIllegalCount ", skeleton.getIllegalCount() 
-            if skeleton.getIllegalCount():
-                self.count = self.iterations
-            else:
-                self.updateIteration(prog)
-                prog.setFraction(1.0 * self.count/ self.iterations)
-                prog.setMessage("%d/%d iterations" % (self.count, self.iterations))
-
-
-            print "messing around with skeleton illegality at end of postprocess while loop"
-            print "printing skeleton"
-            print skeleton
-            print "checking illegality"
-            skeleton.checkIllegality()
-            print "printing skeleton"
-            print skeleton
-            print "setting illegal"
-            skeleton.setIllegal()
-            print "printing skeleton"
-            print skeleton
-            print "checking illegality again"
-            skeleton.checkIllegality()
-            print "printing skeleton"
-            print skeleton
-            print "setting legal"
-            skeleton.setLegal()
-            print "printing skeleton"
-            print skeleton
-            print "checking illegality"
-            skeleton.checkIllegality()
-            print "printing skeleton one last time"
-            print skeleton
+            self.updateIteration(prog)    
+            prog.setFraction(1.0 * self.count/ self.iterations)
+            prog.setMessage("%d/%d iterations" % (self.count, self.iterations))
     
-
-        #prog.finish()
-        print "is skeleton illegal at end of post process?"
-        skeleton.checkIllegality()
-        print skeleton.illegal()
-        print "printing skeleton at end of postprocess"
-        print skeleton
-
-
         
-
-
+        after = skeleton.energyTotal(self.getAlpha())
         
-        try:
-            after = skeleton.energyTotal(self.getAlpha())
-        except:
-            print "calculating after caused a problem, r.spy, pp"
-            after = before
         if before:
             rate = 100.0*(before - after)/before
         else:
@@ -400,27 +283,21 @@ def _Relax_postProcess(self, context):
                     % (diffE, rate))
 
     finally:
-        print "reached finally block for iteration", self.count, "in relaxation.spy"
+        
         prog.finish()
-        #Once the issue with detecting illegal elements and graying out the
-        #OK button is correctly fixed, the following block doesn't need 'try'
-        #It would only come up if they put 0 iterations, which hopefully we can
-        #stop them from doing anyway
-        try:
-            del self.topBoundaryCondition
-            del self.bottomBoundaryCondition
-            del self.leftBoundaryCondition
-            del self.rightBoundaryCondition
-            del self.backBoundaryCondition
-            del self.frontBoundaryCondition
-        except:
-            print "tried to delete non-existent boundary cond, relaxation.spy"
+       
+        del self.topBoundaryCondition
+        del self.bottomBoundaryCondition
+        del self.leftBoundaryCondition
+        del self.rightBoundaryCondition
+        del self.backBoundaryCondition
+        del self.frontBoundaryCondition
+        
     
         materialmanager.materialmanager.delete_prop(self.stiffness.name())
         materialmanager.materialmanager.delete_prop(self.skelRelRate.name())
         #propertyregistration.AllProperties.delete(self.stiffness.name())
         #propertyregistration.AllProperties.delete(self.skelRelRate.name())
-        print "dummy material for relax has been deleted, relaxation.spy"
         materialmanager.materialmanager.delete_secret(self.materialName)
     
     
@@ -485,9 +362,9 @@ relaxReg = cregisteredclass.Registration(
     ordering=-1, #change this later, probably
     params = [
         cskeletonmodifier.alphaParameter,
-        parameter.FloatParameter(name = 'gamma', value = 0.5,
+        parameter.PositiveFloatParameter(name = 'gamma', value = 0.5,
                                  tip = 'Node mobility'),
-        parameter.IntParameter('iterations', value = 1, tip = 'number of steps')
+        parameter.PositiveIntParameter('iterations', value = 1, tip = 'number of steps')
         ],
     tip='Improve a skeleton by solving a finite element system where the properties are functions of the underlying homogeneity and shape',
     discussion=xmlmenudump.loadFile('DISCUSSIONS/engine/reg/relax.xml')

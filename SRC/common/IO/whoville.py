@@ -387,6 +387,8 @@ class WhoDoUndo(Who):                   # that you do so well
 ## each modification, so that the tooltips for the Undo and Redo
 ## buttons can say what they're undoing or redoing.
 
+## TODO: Fix the issues with the cskeleton2.* objects, or find a workaround
+## so that homogeneity isn't recalculated after Undoing a change.
 ##################
 
 # WhoProxies are objects that refer to real Who objects.  The object

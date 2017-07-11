@@ -91,23 +91,6 @@ public:
 	 double d);
 };
 
-
-//NEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEW
-//NEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEW
-
-/*
-class Relax : public FiddleNodes {
-public:
-  Relax(FiddleNodesTargets *trgts, CSkelModCriterion *crtrn, double t,
-	double d);
-};
-*/
-
-//NEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEW
-//NEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEWNEW
-
-
-
 class Smooth : public FiddleNodes {
 public:
   Smooth(FiddleNodesTargets *trgts, CSkelModCriterion *crtrn, double t);

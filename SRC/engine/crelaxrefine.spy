@@ -1,0 +1,22 @@
+# -*- python -*-
+
+from ooflib.common import cregisteredclass
+from ooflib.common.IO import parameter
+from ooflib.common.IO import xmlmenudump
+from ooflib.SWIG.engine import cskeletonmodifier
+from ooflib.SWIG.engine import crefinementcriterion
+
+############################################
+
+
+RelaxRefineReg = cregisteredclass.Registration(
+    'Relax Refine',
+    CSkeletonModifierBasePtr,
+    RelaxRefine,
+    ordering=-.1,
+    params=[
+    cskeletonmodifier.alphaParameter
+    ],
+    tip="Relax refine tip",
+    discussion= """Relax refine discussion """
+    )

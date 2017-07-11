@@ -106,7 +106,7 @@ def newMesh(menuitem, name, skeleton, element_types):
         edict[el.shape().name()] = el
     skelpath = labeltree.makePath(skeleton)
     skel = skeletoncontext.skeletonContexts[skelpath].getObject()
-    femesh = skel.femesh(edict)
+    femesh = skel.femesh(edict, None)
     if femesh is not None:
         meshctxt = ooflib.engine.mesh.meshes.add(
             skelpath+[name], femesh,

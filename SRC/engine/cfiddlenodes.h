@@ -132,21 +132,6 @@ public:
   virtual Coord getPosition(const CDeputySkeleton*, const CSkeletonNode*) const;
 };
 
-//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
-//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
-/*
-class Relax : public FiddleNodes {
-private:
-  double delta;
-public:
-  Relax(FiddleNodesTargets *trgts, CSkelModCriterion *crtrn, double t,
-	double d);
-  virtual Coord getPosition(const CDeputySkeleton*, const CSkeletonNode*) const;
-};
-*/
-//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
-//NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW NEW
-
 class Smooth : public FiddleNodes {
 public:
   Smooth(FiddleNodesTargets *trgts, CSkelModCriterion *crtrn, double t);

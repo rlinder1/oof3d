@@ -74,11 +74,13 @@ class GfxLabelTree:
         self.autoSelect()
         self.gtk.show_all()
 
+        
         self.sbcallbacks = [
             switchboard.requestCallbackMain((tree, "insert"), self.insertCB),
             switchboard.requestCallbackMain((tree, "delete"), self.deleteCB),
             switchboard.requestCallbackMain((tree, "rename"), self.renameCB)
-            ]
+        ]
+            
 
     def setRightClickCB(self, callback, *args, **kwargs):
         debug.mainthreadTest()
@@ -235,9 +237,13 @@ class GfxLabelTree:
     def deleteCB(self, node):
         # node is a LabelTreeNode object
         debug.mainthreadTest()
-        iter = self.lt2treeiter[node]
-        self.treestore.remove(iter)
-        del self.lt2treeiter[node]
+        try:
+            iter = self.lt2treeiter[node]
+            self.treestore.remove(iter)
+            del self.lt2treeiter[node]
+        except:
+            print "issue in gfxLabelTree.py deleteCB function"
+            #raise
         self.autoSelect()
 
     def renameCB(self, node):

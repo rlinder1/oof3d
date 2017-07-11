@@ -68,6 +68,7 @@ public:
   virtual Coord center() const { return position(); }
   int getIndex() const { return index; }
   void setIndex(int idx) { index = idx; }
+  Coord lastPosition() {return last_position;}
 
   void setMobilityX(bool mob);
   bool movable_x() const {
@@ -123,6 +124,7 @@ public:
   
   void unconstrainedMoveTo(const Coord&);
   void moveBack();
+  void moveBackScaled(double scalingFactor);
   bool canMergeWith(const CSkeletonNode *other) const;
   bool illegal() const;
 

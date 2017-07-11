@@ -358,6 +358,7 @@ class SkeletonPage(oofGUI.MainPage):
                 y_periodicity = bool(skel.getPeriodicity(1)) # top bottom
                 z_periodicity = (config.dimension()==3 and
                                   bool(skel.getPeriodicity(2))) # front back
+                #print skel.energyTotal(0), "shape energy checked in skelPage.py"
             finally:
                 if not locked:
                     skelctxt.end_reading()

@@ -20,6 +20,8 @@
 #include "engine/cskeletonelement.h"
 #include "engine/csnapnodes.h"
 
+
+#include <time.h>
 #include <algorithm>
 
 // TODO: Try a Segment-based method instead of an Element-based
@@ -108,6 +110,8 @@ NodeSnapperBase *SnapNodes::getNodeSnapper(CSkeletonElement *el,
 
 CSkeletonBase* SnapNodes::apply(CSkeletonBase *skeleton) {
 
+  clock_t begin = clock();
+  
   DefiniteProgress *progress = 
     dynamic_cast<DefiniteProgress*>(getProgress("SnapNodes", DEFINITE));
   
@@ -229,12 +233,16 @@ CSkeletonBase* SnapNodes::apply(CSkeletonBase *skeleton) {
       }
     delete movedNodes;
     progress->finish();
+    clock_t end = clock();
+    double SNtime = (double)(end - begin) / CLOCKS_PER_SEC;
+    std::cout << "time for snap nodes is " << SNtime << std::endl;
     return newSkeleton;
   }
   catch (...) {
     progress->finish();
     throw;
   }
+  
 } // SnapNodes::apply
 
 

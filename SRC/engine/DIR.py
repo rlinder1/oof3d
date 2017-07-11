@@ -158,10 +158,10 @@ hfiles = [
 
 if DIM_3:
     pyfiles.extend(["faceselectdisplay.py"])
-    hfiles.extend(["cskeletonface.h", "skeletonfilter.h", "relaxation.h"])
-    cfiles.extend(["cskeletonface.C", "skeletonfilter.C", "relaxation.C"])
-    swigfiles.extend(["cskeletonface.swg", "skeletonfilter.swg", "relaxation.swg"])
-    swigpyfiles.extend(["skeletonfilter.spy", "relaxation.spy"])
+    hfiles.extend(["crelaxrefine.h", "cskeletonface.h", "relaxation.h", "skeletonfilter.h"])
+    cfiles.extend(["crelaxrefine.C", "cskeletonface.C", "relaxation.C", "skeletonfilter.C"])
+    swigfiles.extend(["crelaxrefine.swg", "cskeletonface.swg", "relaxation.swg", "skeletonfilter.swg"])
+    swigpyfiles.extend(["crelaxrefine.spy", "relaxation.spy", "skeletonfilter.spy"])
 
 
 def set_clib_flags(clib):

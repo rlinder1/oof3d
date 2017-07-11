@@ -195,6 +195,7 @@ class PropertyManager:
     # Delete the named item.  LabelTree ("self.data") will raise
     # ErrUserError if the named item is a non-leaf.
     def delete(self, name):
+        
         reg = self.data[name].object
         if hasattr(reg, "parent"):
             self.materialmanager.delete_prop(name)
@@ -202,6 +203,7 @@ class PropertyManager:
             self.data.delete(name)
         else:
             reporter.warn("Predefined properties cannot be deleted!")
+        
 
     # Delete all copied (not predefined) Properties.
     def deleteAll(self):

@@ -198,8 +198,13 @@ public:
 
 
   double getHomogeneityIndex();
+  double getUnweightedHomogeneity();
   double energyTotal(double alpha);
+  double getUnweightedShapeEnergy();
+  double getWeightedShapeEnergy();
 
+
+  
   CSkeletonElement* enclosingElement(Coord *Point);
   CSkeletonElement* findElement(vtkCellPtr);
   CSkeletonNode* nearestNode(Coord *Point);

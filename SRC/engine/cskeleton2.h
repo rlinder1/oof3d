@@ -145,7 +145,13 @@ protected:
   mutable int illegalCount;
   mutable int suspectCount;
   mutable double homogeneityIndex;
+  mutable double unweightedHomogIndex;
+  mutable double unweightedShapeEnergy;
+  mutable double weightedShapeEnergy;
   mutable TimeStamp homogeneity_index_computation_time;
+  mutable TimeStamp unweighted_homogeneity_computation_time;
+  mutable TimeStamp unweighted_shape_energy_computation_time;
+  mutable TimeStamp weighted_shape_energy_computation_time;
   // TimeStamp most_recent_geometry_change;
   mutable TimeStamp illegal_count_computation_time;
   mutable TimeStamp suspect_count_computation_time;
@@ -175,7 +181,6 @@ public:
   }
   
   virtual void checkIllegality() = 0;
-  //remove later?
   virtual bool checkIllegalityBool() = 0;
   void incrementTimestamp();
   const TimeStamp &getTimeStamp() const;
@@ -302,10 +307,14 @@ public:
   bool checkExteriorSegments(const CSkeletonSegmentVector*) const;
   bool checkExteriorFaces(const CSkeletonFaceVector*) const;
 
-  // homogeneity
+  // homogeneity and shape energy
   double getHomogeneityIndex() const;
   void calculateHomogeneityIndex() const;
+  double getUnweightedHomogeneity() const;
+  void calculateUnweightedHomogeneity() const;
   double energyTotal(double alpha) const;
+  double getUnweightedShapeEnergy() const;
+  double getWeightedShapeEnergy() const;
 
   // methods related to deputies and copying
   virtual CSkeleton *sheriffSkeleton() = 0;

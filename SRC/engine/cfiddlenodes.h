@@ -18,8 +18,6 @@
 #include "engine/cskeletonselectable_i.h"
 #include "engine/cskeletonmodifier.h"
 
-#include<iostream> //experimenting with printing
-#include<typeinfo> //experimenting with typeid()
 /******************************************************
 
                      TARGETS

@@ -27,10 +27,9 @@ from ooflib.engine import nonlinearsolver
 from ooflib.engine import matrixmethod 
 from ooflib.SWIG.engine import preconditioner 
 from ooflib.engine import evolve 
-#from ooflib.engine import propertyregistration #needed for lines that are currently commented out
+#from ooflib.engine import propertyregistration
+#line above needed for lines that are currently commented out
 import ooflib.engine.mesh 
-
-from ooflib.common import timer
 
 #Class registration for classes related to Rescale Settings
 cregisteredclass.registerCClass(RescaleSettingsPtr)
@@ -57,10 +56,8 @@ def _Relax_setProperties(self):
         isocijkl.IsotropicRank4TensorCij(c11=1.0, c12=0.5)
     
     #Makes a skeleton relaxation rate instance and sets to user-given parameters
-   
     self.relaxPropReg = skeletonrelaxationrate.SkeletonRelaxationRateTensor.\
                    named_copy("__relaxationrate%d__" % threadno, secret=True)
-   
     self.relaxPropReg.getParameter("alpha").value = self.getAlpha()
     self.relaxPropReg.getParameter("gamma").value = self.getGamma()
     
@@ -70,12 +67,10 @@ def _Relax_setProperties(self):
     self.stiffness = stiffnessPropReg()
     materialmanager.materialmanager.add_prop(self.materialName,
                                              self.stiffness.name())
-    
     self.skelRelRate = self.relaxPropReg()
     materialmanager.materialmanager.add_prop(self.materialName,
                                              self.skelRelRate.name())
    
-
 RelaxPtr.setProperties = _Relax_setProperties
 
 
@@ -87,14 +82,15 @@ RelaxPtr.material = _Relax_material
 
 
 #Checks that we can proceed.
-#canRelaxFurther is false when rescaling is disabled OR we have rescaled too many times.
-#solverConverged is false if the solver threw an exception during the previous iteration.
+#canRelaxFurther is false when rescaling is disabled OR
+#we have rescaled too many times.
+#solverConverged is false if the solver threw an exception
+#during the previous iteration.
 def _Relax_goodToGo(self, skeleton):
     return (self.canRelaxFurther
             and self.count < self.iterations
             and self.solverConverged)
 RelaxPtr.goodToGo = _Relax_goodToGo
-
 
 
 #Increments iteration counter
@@ -132,8 +128,7 @@ RelaxPtr.create_mesh =  _Relax_create_mesh
 
 #Defines and activates the displacement field for the default subproblem
 #of the mesh context
-def _Relax_define_fields(self, meshctxt):
-    
+def _Relax_define_fields(self, meshctxt):    
     femesh = meshctxt.femesh()
     subp = meshctxt.get_default_subproblem().getObject()
     displacement = field.getField('Displacement')
@@ -147,7 +142,6 @@ def _Relax_activate_equations(self, meshctxt):
     meshctxt.get_default_subproblem().getObject().activate_equation(
         equation.getEquation('Force_Balance'))
 RelaxPtr.activate_equations = _Relax_activate_equations
-
 
 
 #Sets conditions along all six boundaries to
@@ -228,9 +222,9 @@ def _Relax_update_node_positions(self, skeleton, mesh):
     femesh = mesh.getObject()
     
     #Calls the C++ function that handles the main loop for moving nodes.
-    #If this function returns false, it means that the skeleton had to be adjusted
-    #to prevent it from becoming illegal. What happens now depends on what the
-    #rescaling settings are.
+    #If this function returns false, it means that the skeleton had to
+    #be adjusted to prevent it from becoming illegal. What happens
+    #now depends on what the rescaling settings are.
     if not self.updateNodePositionsC(skeleton, femesh):
         #If rescaling isn't allowed, tell the user that Relax is aborting.
         #Set flag to prevent further iterations
@@ -239,8 +233,9 @@ def _Relax_update_node_positions(self, skeleton, mesh):
                             "to prevent formation of illegal elements")
             reporter.report("Try using Rationalize or a smaller gamma")
             self.canRelaxFurther = False
-        #If rescaling is allowed but we've run out of rescales, tell the user that
-        #Relax is aborting for this reason. Set flag to prevent further iterations.
+        #If rescaling is allowed but we've run out of rescales, tell
+        #the user that Relax is aborting for this reason. Set flag
+        #to prevent further iterations.
         elif self.getRescaleCounter() > self.getMaxRescales():
             reporter.report("Aborted relaxation in iteration", self.count,
                             "because the maximum number of allowable",
@@ -257,7 +252,6 @@ def _Relax_update_node_positions(self, skeleton, mesh):
 RelaxPtr.update_node_positions = _Relax_update_node_positions
 
 
-
 #This function initializes the displacement field to zero
 def _Relax_initialize_fields(self, mesh):
     initializer = fieldinit.ConstThreeVectorFieldInit(cx=0.0, cy=0.0, cz=0.0)
@@ -267,23 +261,19 @@ def _Relax_initialize_fields(self, mesh):
 RelaxPtr.initialize_fields = _Relax_initialize_fields
 
 
-
 #Handles the overall relaxation process
 #(This function is kind of like main for relaxation.*)
 #The context is a skeleton context
 def _Relax_postProcess(self, context):
-    stopwatch = timer.Timer("relaxTimer")
-    stopwatch.start()
-
-    
     #Creates progress bar
     prog = progress.getProgress("Relax", progress.DEFINITE)
        
     #Creates the relaxation material and initializes its properties
     self.setProperties()
 
-    #Gets skeleton object and checks that it is legal, which it should be since
-    #the OK button for Relax is supposed to be grayed out when the skeleton is illegal
+    #Gets skeleton object and checks that it is legal, which it
+    #should be since the OK button for Relax is supposed to be
+    #grayed out when the skeleton is illegal
     skeleton = context.getObject()
     if skeleton.checkIllegalityBool():
         reporter.report("Illegal elements detected, could not perform relaxation")
@@ -298,19 +288,18 @@ def _Relax_postProcess(self, context):
     self.solverConverged = True
     self.canRelaxFurther = True
     
-
     try:
-        #Keeps iterating as long as progress hasn't stopped and goodToGo is still
-        #returning true
+        #Keeps iterating as long as progress hasn't stopped and
+        #goodToGo is still returning true
         while self.goodToGo(skeleton) and not prog.stopped():
-            
+
             #Creates a mesh based on the skeleton context and sets up the
             #fields, equations, and boundary conditions
             mesh = self.create_mesh(context)
             self.define_fields(mesh)
             self.initialize_fields(mesh)
             self.activate_equations(mesh)
-            mesh.changed("Relaxing") #necessary? what does it do?
+            mesh.changed("Relaxing") 
             self.set_boundary_conditions(mesh)
 
             #Calls coreProcess, which solves the mesh's default subproblem
@@ -364,14 +353,14 @@ def _Relax_postProcess(self, context):
         #Deletes the properties, and then the relaxation material
         materialmanager.materialmanager.delete_prop(self.stiffness.name())
         materialmanager.materialmanager.delete_prop(self.skelRelRate.name())
-        #It's not clear whether there are circumstances where the next two lines are needed.
-        #As of now, they are commented out because they cause a (non-fatal) exception
+        #It's not clear whether there are circumstances
+        #where the next two deletes are needed.
+        #As of now, they are commented out because they
+        #cause a (non-fatal) exception
         #propertyregistration.AllProperties.delete(self.stiffness.name())
         #propertyregistration.AllProperties.delete(self.skelRelRate.name())
         materialmanager.materialmanager.delete_secret(self.materialName)
 
-        stopwatch.stop()
-        print stopwatch.elapsed(), "seconds elapsed during relax pp"
 RelaxPtr.postProcess = _Relax_postProcess
 
 
@@ -408,8 +397,6 @@ def _Relax_coreProcess(self, meshctxt, subp):
         self.solverConverged = True
     finally:
         meshctxt.end_writing()
-    
-    
     
 RelaxPtr.coreProcess = _Relax_coreProcess
 
@@ -471,9 +458,12 @@ yesRescaleReg = cregisteredclass.Registration(
                                              tip = 'maximum number of times the node displacement can be rescaled before Relax aborts')
               ],
     tip='Allow the node displacement to automatically rescale if an illegal element will be formed on the next iteration',
-    discussion = """This option allows for automatic rescaling of the node displacement if Relax moves a node too far and creates an illegal element. 
-    If an illegal element forms, all nodes move back partway towards their previous position. 
-    This is equivalent to repeating an illegal iteration with a smaller gamma (but is not exactly implemented as such).    """
+    discussion = """This option allows for automatic rescaling of the node
+    displacement if Relax moves a node too far and creates an illegal element. 
+    If an illegal element forms, all nodes move back partway towards 
+    their previous position. 
+    This is equivalent to repeating an illegal iteration with a 
+    smaller gamma (but is not exactly implemented as such).    """
     )
 
 #Class registration for NoRescale
@@ -483,6 +473,7 @@ noRescaleReg = cregisteredclass.Registration(
     NoRescale,
     ordering=0,
     tip= 'If an illegal element forms, revert skeleton to previous legal state and abort Relax',
-    discussion = """This option disables automatic rescaling of node displacement. """
+    discussion = """This option disables automatic 
+    rescaling of node displacement. """
     )
 

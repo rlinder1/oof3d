@@ -60,7 +60,6 @@ import ooflib.engine.IO.scheduledoutputmenu
 import ooflib.SWIG.engine.crefine
 import ooflib.SWIG.engine.csnapnodes
 import ooflib.SWIG.engine.csnaprefine
-import ooflib.SWIG.engine.crelaxrefine
 import ooflib.SWIG.engine.relaxation
 # import ooflib.engine.refinementtarget
 import ooflib.engine.rationalize

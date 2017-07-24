@@ -26,25 +26,27 @@ protected:
   double displacementMultiplier; //initialized to 1
   int rescaleCounter; //how many rescales have occurred
 
-  //List of other Relax member variables that aren't declared here
-  //because they are only used in Python (relaxation.spy)
   /*
-  materialName //string, gets set to boneMarrow
-  count //int, how many iterations have occurred
-  rescaleCounter //int, how many rescales have occurred
-  canRelaxFurther //bool, can we continue relaxing?
-  solverConverged //bool, flag that indicates problems with the solver
-  meshName //string, gets a unique name based on thread and skeleton path
+  List of other Relax member variables that aren't declared here
+  because they are only used in Python (relaxation.spy)
   
-  skelRelRate //copy of skeleton relaxation rate property
-  stiffness //copy of isotropic elasticity property
-  leftBoundaryCondition //DirichletBC
-  rightBoundaryCondition //DirechletBC
-  topBoundaryCondition //DirechletBC
-  bottomBoundaryCondition //DirichletBC
-  frontBoundaryCondition //DirichletBC
-  backBoundaryCondition //DirichletBC
+  materialName --- string, gets set to boneMarrow
+  count --- int, how many iterations have occurred
+  rescaleCounter --- int, how many rescales have occurred
+  canRelaxFurther --- bool, can we continue relaxing?
+  solverConverged --- bool, flag that indicates problems with the solver
+  meshName --- string, gets a unique name based on thread and skeleton path
+  
+  skelRelRate --- copy of skeleton relaxation rate property
+  stiffness --- copy of isotropic elasticity property
+  leftBoundaryCondition --- DirichletBC
+  rightBoundaryCondition --- DirichletBC
+  topBoundaryCondition --- DirichletBC
+  bottomBoundaryCondition --- DirichletBC
+  frontBoundaryCondition --- DirichletBC
+  backBoundaryCondition --- DirichletBC
   */
+  
  public:
   //Creates an instance of the Relax object
   Relax(double alpha, double gamma, int iterations, RescaleSettings* settings);
@@ -56,7 +58,7 @@ protected:
   //Core loop for updating the nodes based on the displacement data
   bool updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh);
 
-  //Getters so that python methods can access these variables
+  //Getters so that python methods can access C++ member variables
   double getAlpha() {return alpha;}
   double getGamma() {return gamma;}
   int getIterations() {return iterations;}

@@ -20,9 +20,6 @@ from ooflib.SWIG.common import progress
 from ooflib.engine.IO import skeletongroupparams
 
 
-#temporary?
-from ooflib.common import timer
-
 cregisteredclass.registerCClass(FiddleNodesTargetsPtr)
 
 FiddleNodesTargetsPtr.tip = "Set target Nodes for Skeleton modifiers."
@@ -40,8 +37,6 @@ def _FiddleNodes_makeProgress(self):
 FiddleNodesPtr.makeProgress = _FiddleNodes_makeProgress
 
 def _FiddleNodes_postProcess(self, context):
-    stopwatch = timer.Timer("annealTimer")
-    stopwatch.start()
     skeleton = context.getObject()
     prog = self.makeProgress()
     try:
@@ -75,13 +70,9 @@ def _FiddleNodes_postProcess(self, context):
         diffE = after - before
         reporter.report("%s deltaE = %10.4e (%6.3f%%)"
                         % (self.outro, diffE, rate))
-        print "cfiddlenodes.spy energy before", before
-        print "cfiddlenodes.spy energy after", after
     finally:
         self.getTargets().cleanUp()
         prog.finish()
-        stopwatch.stop()
-        print stopwatch.elapsed(), "seconds elapsed during cfiddlenodes pp"
 
 FiddleNodesPtr.postProcess = _FiddleNodes_postProcess
 

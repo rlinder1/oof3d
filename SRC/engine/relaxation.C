@@ -12,7 +12,8 @@
 //Relax constructor
 //Sets alpha, gamma, iterations, and settings based on user input
 //Initializes rescaleCounter to 0 and displacementMultiplier to 1
-Relax::Relax(double alpha, double gamma, int iterations, RescaleSettings* settings)
+Relax::Relax(double alpha, double gamma, int iterations,
+	     RescaleSettings* settings)
   :alpha(alpha), gamma(gamma),
    iterations(iterations),
    settings(settings),
@@ -44,9 +45,10 @@ CSkeletonBase* Relax::apply(CSkeletonBase *skeleton){
 }
 
 //This is the core loop for moving nodes based on displacement data
-//If illegal elements are produced and we can rescale, we move the nodes partway
-//back toward their previous positions.
-//If we cannot rescale, the nodes move all the way back to their previous positions
+//If illegal elements are produced and we can rescale, we move
+//the nodes partway back toward their previous positions.
+//If we cannot rescale, the nodes move all the way back
+//to their previous positions
 bool Relax::updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh) {
   
   Field* displacement = Field::getField("Displacement");
@@ -60,7 +62,8 @@ bool Relax::updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh) {
     CSkeletonElement* skelel = neighbors[0];
     //finds the corresponding mesh element, then node
     Element* realel = mesh->getElement(skelel->getIndex());
-    PointData* realnode = realel->getCornerFuncNode(skelel->getNodeIndexIntoList(node));
+    PointData* realnode =
+      realel->getCornerFuncNode(skelel->getNodeIndexIntoList(node));
     //finds out how much the mesh node has been displaced
     double dx = displacement->value(mesh, realnode, 0);
     double dy = displacement->value(mesh, realnode, 1);
@@ -100,7 +103,8 @@ bool Relax::updateNodePositionsC(CDeputySkeleton* skeleton, FEMesh* mesh) {
     for (int i = 0; i < numNodes; i++) {
       CSkeletonNode* node = skeleton->getNode(i);
       //This is equivalent to reverting the node to its previous position
-      //and then doing skeleton->moveNodeBy(node, displacementMultiplier*Coord(dx, dy, dz))
+      //and then doing
+      //skeleton->moveNodeBy(node, displacementMultiplier*Coord(dx, dy, dz))
       node->moveBackScaled(1 - displacementScaleFactor);
     }
     rescaleCounter++;
